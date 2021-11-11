@@ -14544,7 +14544,11 @@ a.anchor-link {
 <li>Read csv  </li>
 <li>Shuffle data  </li>
 <li>transform non-numerical values to one-hot encoding  </li>
-<li>transform label to binary / 5 class type</li>
+<li>transform label to binary / 5 class type<ul>
+<li>for binary: if G3 &lt; 10, y = 0; else y = 1  </li>
+<li>for 5-level: class [I, II, III, IV, V], y = [0, 1, 2, 3, 4]</li>
+</ul>
+</li>
 </ol>
 
 </div>
@@ -14573,7 +14577,7 @@ a.anchor-link {
 
 <span class="c1"># transform y to binary / 5 class type</span>
 <span class="n">y_binary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span> <span class="c1"># if G3 &lt; 10, y = 0</span>
-<span class="n">y_5class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">y_5class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span> <span class="c1"># for class [I, II, III, IV, V], y = [0, 1, 2, 3, 4]</span>
 <span class="k">del</span> <span class="n">y</span>
 </pre></div>
 
@@ -14613,7 +14617,7 @@ a.anchor-link {
 <h1 id="Model-Construction">Model Construction<a class="anchor-link" href="#Model-Construction">&#182;</a></h1><h3 id="Algorithm-behind-decision-tree:">Algorithm behind decision tree:<a class="anchor-link" href="#Algorithm-behind-decision-tree:">&#182;</a></h3><p>DecisionTreeClassifier from sklearn.tree uses CART (Classification and Regression Trees) algorithm, which is similar to C4.5 algorithm, but it supports numerical value (regression) and constructs binary trees, using feature and its threshold which yields the largest information gain at each node.<br>
 For classification tree, CART uses impurity function (IF) to split, and we use gini index in this instance.<br>
 For regresstion tree, CART minimizes square error between each child set and its ground truth.</p>
-<h3 id="Random-forest">Random forest<a class="anchor-link" href="#Random-forest">&#182;</a></h3><p>We randomly select 20% of our training set to build each tree (with all the features), with three different tree numbers [4, 8, 16]</p>
+<h3 id="Random-forest">Random forest<a class="anchor-link" href="#Random-forest">&#182;</a></h3><p>We randomly select 60% of our training set to build each tree (with all the features), with three different tree numbers [4, 8, 16]</p>
 <h3 id="Difference-between-K-fold-cross-validation-and-Random-Forest:">Difference between K-fold cross-validation and Random Forest:<a class="anchor-link" href="#Difference-between-K-fold-cross-validation-and-Random-Forest:">&#182;</a></h3><ul>
 <li><p>K-fold: 一種「驗證模型擬合性能」的方法，最主要的目的是「幫助我們選擇模型的設定（超參數等）」，因為我們不能將training set來作為測試基準，否則會無法測試出model的泛化程度，即training set的偏誤（bias）無法被糾正，或是無法發現model的over-fitting問題。</p>
 </li>
@@ -14634,7 +14638,7 @@ For regresstion tree, CART minimizes square error between each child set and its
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
 <span class="n">DTclf</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">RF_nums</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
-<span class="n">RFclfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">max_samples</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">RF_nums</span><span class="p">}</span>
+<span class="n">RFclfs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">max_samples</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">RF_nums</span><span class="p">}</span>
 <span class="n">KNN_nums</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
 <span class="n">KNNclfs</span> <span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">KNN_nums</span><span class="p">}</span>
 </pre></div>
@@ -14647,7 +14651,10 @@ For regresstion tree, CART minimizes square error between each child set and its
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1><p>都是畫表格、算metrics的code</p>
+<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1><p>都是畫表格、算metrics的code<br>
+show_multickass_score: 根據不同class當作positive，來分別計算不同的recall, precision等score<br>
+compare_PCA: 畫出有無PCA的metrics<br>
+compare_K: 根據不同的K來畫出對應的metrics</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -14656,7 +14663,7 @@ For regresstion tree, CART minimizes square error between each child set and its
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">cross_validate</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">KFold</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">precision_score</span>
 <span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
 
@@ -14771,7 +14778,19 @@ For regresstion tree, CART minimizes square error between each child set and its
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Results-Part-1:-compare-with-and-without-PCA">Results Part 1: compare with and without PCA<a class="anchor-link" href="#Results-Part-1:-compare-with-and-without-PCA">&#182;</a></h1>
+<h1 id="Results-Part-1:-compare-with-and-without-PCA">Results Part 1: compare with and without PCA<a class="anchor-link" href="#Results-Part-1:-compare-with-and-without-PCA">&#182;</a></h1><p>在這邊選擇 8 棵樹的RF、k = 8的KNN來做比較</p>
+<h2 id="%E7%B5%90%E6%A7%8B%E5%A6%82%E4%B8%8B%EF%BC%9A">&#32080;&#27083;&#22914;&#19979;&#65306;<a class="anchor-link" href="#%E7%B5%90%E6%A7%8B%E5%A6%82%E4%B8%8B%EF%BC%9A">&#182;</a></h2><h3 id="Binary-classification">Binary classification<a class="anchor-link" href="#Binary-classification">&#182;</a></h3>
+<pre><code>for each model:  
+    with PCA  
+    without PCA  
+final results
+</code></pre>
+<h3 id="5-level-classification">5-level classification<a class="anchor-link" href="#5-level-classification">&#182;</a></h3>
+<pre><code>for each model:  
+    with PCA  
+    without PCA  
+final results</code></pre>
+
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
@@ -14790,12 +14809,12 @@ For regresstion tree, CART minimizes square error between each child set and its
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;DT without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="c1"># for RF</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for Random Forest comparing with and without PCA:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">[</span><span class="n">RF_nums</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">RF_nums</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;RF with PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;RF without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="c1"># for KNN</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for KNN comparing with and without PCA:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">[</span><span class="n">KNN_nums</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">KNN_nums</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">[</span><span class="n">KNN_nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;KNN with PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;KNN without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="nb">print</span><span class="p">()</span>
@@ -14812,12 +14831,12 @@ For regresstion tree, CART minimizes square error between each child set and its
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;DT without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="c1"># for RF</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for Random Forest comparing with and without PCA:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">[</span><span class="n">RF_nums</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">RF_nums</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;RF with PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;RF without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="c1"># for KNN</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for KNN comparing with and without PCA:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">[</span><span class="n">KNN_nums</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">KNN_nums</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_PCA</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">[</span><span class="n">KNN_nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;KNN with PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
 <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;KNN without PCA&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">rst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 <span class="nb">print</span><span class="p">()</span>
@@ -14882,31 +14901,31 @@ Result for Random Forest comparing with and without PCA:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.3333  │     9      │
+│ G3 &lt; 10            │   35.6667 │    7.66667 │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   9.66667 │    78.6667 │
+│ G3 &gt;= 10           │    8      │   80.3333  │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.858228 │ 0.792308 │    0.780303 │
+│ G3 &lt; 10   │   0.881013 │ 0.823077 │    0.816794 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.858228 │ 0.890566 │    0.897338 │
+│ G3 &gt;= 10  │   0.881013 │ 0.909434 │    0.912879 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 2. Without PCA:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   36.6667 │    6.66667 │
+│ G3 &lt; 10            │  39.3333  │     4      │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │    7      │   81.3333  │
+│ G3 &gt;= 10           │   7.66667 │    80.6667 │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.896203 │ 0.846154 │    0.839695 │
+│ G3 &lt; 10   │   0.911392 │ 0.907692 │    0.836879 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.896203 │ 0.920755 │    0.924242 │
+│ G3 &gt;= 10  │   0.911392 │ 0.913208 │    0.952756 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 Result for KNN comparing with and without PCA:
@@ -14914,31 +14933,31 @@ Result for KNN comparing with and without PCA:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.6667  │    8.66667 │
+│ G3 &lt; 10            │  36       │    7.33333 │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   7.33333 │   81       │
+│ G3 &gt;= 10           │   9.66667 │   78.6667  │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.878481 │ 0.8      │    0.825397 │
+│ G3 &lt; 10   │   0.870886 │ 0.830769 │    0.788321 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.878481 │ 0.916981 │    0.903346 │
+│ G3 &gt;= 10  │   0.870886 │ 0.890566 │    0.914729 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 2. Without PCA:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.6667  │    8.66667 │
+│ G3 &lt; 10            │   35.3333 │     8      │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   6.66667 │   81.6667  │
+│ G3 &gt;= 10           │   10      │    78.3333 │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.883544 │ 0.8      │    0.83871  │
+│ G3 &lt; 10   │   0.863291 │ 0.815385 │    0.779412 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.883544 │ 0.924528 │    0.904059 │
+│ G3 &gt;= 10  │   0.863291 │ 0.886792 │    0.907336 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 
@@ -14950,13 +14969,13 @@ Final results (Binary):
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
 │ DT without PCA  │   0.840506 │           0.814514 │              0.821037 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with PCA     │   0.858228 │           0.841437 │              0.838821 │
+│ RF with PCA     │   0.881013 │           0.866255 │              0.864836 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF without PCA  │   0.896203 │           0.883454 │              0.881969 │
+│ RF without PCA  │   0.911392 │           0.91045  │              0.894818 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN with PCA    │   0.878481 │           0.858491 │              0.864371 │
+│ KNN with PCA    │   0.870886 │           0.860668 │              0.851525 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN without PCA │   0.883544 │           0.862264 │              0.871384 │
+│ KNN without PCA │   0.863291 │           0.851089 │              0.843374 │
 ╘═════════════════╧════════════╧════════════════════╧═══════════════════════╛
 
 ######################################## 5-Level Classification ########################################
@@ -15019,114 +15038,114 @@ Result for DT comparing with and without PCA:
 
 Result for Random Forest comparing with and without PCA:
 1. With PCA:
-╒════════════════════╤══════════╤══════════╤══════════╤═══════════╤═══════════╕
-│ Confusion matrix   │        I │       II │      III │        IV │         V │
-╞════════════════════╪══════════╪══════════╪══════════╪═══════════╪═══════════╡
-│ I                  │ 7.66667  │  4.66667 │ 1        │  0        │  0        │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ II                 │ 5        │ 12       │ 2.33333  │  0.666667 │  0        │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ III                │ 1        │  5.66667 │ 8        │  5.33333  │  0.666667 │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ IV                 │ 0.333333 │  1       │ 6.33333  │ 17.6667   │  9        │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ V                  │ 0        │  0       │ 0.666667 │  8.33333  │ 34.3333   │
-╘════════════════════╧══════════╧══════════╧══════════╧═══════════╧═══════════╛
-╒═══════════╤════════════╤══════════╤═════════════╕
-│ Metrics   │   Accuracy │   Recall │   Precision │
-╞═══════════╪════════════╪══════════╪═════════════╡
-│ I         │   0.605063 │ 0.575    │    0.547619 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ II        │   0.605063 │ 0.6      │    0.514286 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ III       │   0.605063 │ 0.387097 │    0.436364 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ IV        │   0.605063 │ 0.514563 │    0.552083 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ V         │   0.605063 │ 0.792308 │    0.780303 │
-╘═══════════╧════════════╧══════════╧═════════════╛
-2. Without PCA:
-╒════════════════════╤══════════╤══════════╤══════════╤═══════════╤═══════════╕
-│ Confusion matrix   │        I │       II │      III │        IV │         V │
-╞════════════════════╪══════════╪══════════╪══════════╪═══════════╪═══════════╡
-│ I                  │ 5        │ 6.33333  │ 1.66667  │  0.333333 │  0        │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ II                 │ 5        │ 9        │ 3.33333  │  2.66667  │  0        │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ III                │ 1        │ 4.66667  │ 5.66667  │  8.66667  │  0.666667 │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ IV                 │ 0.333333 │ 0.666667 │ 5.66667  │ 20.3333   │  7.33333  │
-├────────────────────┼──────────┼──────────┼──────────┼───────────┼───────────┤
-│ V                  │ 0        │ 0        │ 0.333333 │  6.66667  │ 36.3333   │
-╘════════════════════╧══════════╧══════════╧══════════╧═══════════╧═══════════╛
-╒═══════════╤════════════╤══════════╤═════════════╕
-│ Metrics   │   Accuracy │   Recall │   Precision │
-╞═══════════╪════════════╪══════════╪═════════════╡
-│ I         │   0.579747 │ 0.375    │    0.441176 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ II        │   0.579747 │ 0.45     │    0.435484 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ III       │   0.579747 │ 0.274194 │    0.34     │
-├───────────┼────────────┼──────────┼─────────────┤
-│ IV        │   0.579747 │ 0.592233 │    0.525862 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ V         │   0.579747 │ 0.838462 │    0.819549 │
-╘═══════════╧════════════╧══════════╧═════════════╛
-
-Result for KNN comparing with and without PCA:
-1. With PCA:
-╒════════════════════╤══════════╤═══════════╤══════════╤══════════╤═══════════╕
-│ Confusion matrix   │        I │        II │      III │       IV │         V │
-╞════════════════════╪══════════╪═══════════╪══════════╪══════════╪═══════════╡
-│ I                  │ 7.33333  │  5.33333  │ 0.666667 │  0       │  0        │
-├────────────────────┼──────────┼───────────┼──────────┼──────────┼───────────┤
-│ II                 │ 0.333333 │ 17        │ 1.33333  │  1.33333 │  0        │
-├────────────────────┼──────────┼───────────┼──────────┼──────────┼───────────┤
-│ III                │ 0        │  5        │ 5.66667  │  9.33333 │  0.666667 │
-├────────────────────┼──────────┼───────────┼──────────┼──────────┼───────────┤
-│ IV                 │ 0        │  0.333333 │ 4        │ 21.6667  │  8.33333  │
-├────────────────────┼──────────┼───────────┼──────────┼──────────┼───────────┤
-│ V                  │ 0        │  0        │ 0        │ 10       │ 33.3333   │
-╘════════════════════╧══════════╧═══════════╧══════════╧══════════╧═══════════╛
-╒═══════════╤════════════╤══════════╤═════════════╕
-│ Metrics   │   Accuracy │   Recall │   Precision │
-╞═══════════╪════════════╪══════════╪═════════════╡
-│ I         │    0.64557 │ 0.55     │    0.956522 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ II        │    0.64557 │ 0.85     │    0.614458 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ III       │    0.64557 │ 0.274194 │    0.485714 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ IV        │    0.64557 │ 0.631068 │    0.511811 │
-├───────────┼────────────┼──────────┼─────────────┤
-│ V         │    0.64557 │ 0.769231 │    0.787402 │
-╘═══════════╧════════════╧══════════╧═════════════╛
-2. Without PCA:
 ╒════════════════════╤══════════╤═══════════╤══════════╤═══════════╤═══════════╕
 │ Confusion matrix   │        I │        II │      III │        IV │         V │
 ╞════════════════════╪══════════╪═══════════╪══════════╪═══════════╪═══════════╡
-│ I                  │ 6.66667  │  6        │ 0.666667 │  0        │  0        │
+│ I                  │ 8        │  5        │ 0.333333 │  0        │  0        │
 ├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
-│ II                 │ 0.666667 │ 17.3333   │ 1.66667  │  0.333333 │  0        │
+│ II                 │ 3.66667  │ 14.3333   │ 1.33333  │  0.666667 │  0        │
 ├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
-│ III                │ 0        │  5.33333  │ 6.33333  │  8.66667  │  0.333333 │
+│ III                │ 0.333333 │  5.33333  │ 7.33333  │  7.33333  │  0.333333 │
 ├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
-│ IV                 │ 0        │  0.333333 │ 3.66667  │ 23        │  7.33333  │
+│ IV                 │ 0.333333 │  0.666667 │ 4        │ 21        │  8.33333  │
 ├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
-│ V                  │ 0        │  0        │ 0        │ 10.6667   │ 32.6667   │
+│ V                  │ 0        │  0.666667 │ 0        │  7        │ 35.6667   │
 ╘════════════════════╧══════════╧═══════════╧══════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ I         │   0.653165 │ 0.5      │    0.909091 │
+│ I         │   0.655696 │ 0.6      │    0.648649 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ II        │   0.653165 │ 0.866667 │    0.597701 │
+│ II        │   0.655696 │ 0.716667 │    0.551282 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ III       │   0.653165 │ 0.306452 │    0.513514 │
+│ III       │   0.655696 │ 0.354839 │    0.564103 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ IV        │   0.653165 │ 0.669903 │    0.539062 │
+│ IV        │   0.655696 │ 0.61165  │    0.583333 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ V         │   0.653165 │ 0.753846 │    0.809917 │
+│ V         │   0.655696 │ 0.823077 │    0.804511 │
+╘═══════════╧════════════╧══════════╧═════════════╛
+2. Without PCA:
+╒════════════════════╤══════════╤═══════════╤═════════╤═══════════╤══════════╕
+│ Confusion matrix   │        I │        II │     III │        IV │        V │
+╞════════════════════╪══════════╪═══════════╪═════════╪═══════════╪══════════╡
+│ I                  │ 6.66667  │  6.66667  │ 0       │  0        │  0       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ II                 │ 4        │ 13        │ 2.33333 │  0.666667 │  0       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ III                │ 1.33333  │  7        │ 6.33333 │  5        │  1       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ IV                 │ 0.333333 │  0.333333 │ 8       │ 17.3333   │  8.33333 │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ V                  │ 0        │  0.333333 │ 0       │  8        │ 35       │
+╘════════════════════╧══════════╧═══════════╧═════════╧═══════════╧══════════╛
+╒═══════════╤════════════╤══════════╤═════════════╕
+│ Metrics   │   Accuracy │   Recall │   Precision │
+╞═══════════╪════════════╪══════════╪═════════════╡
+│ I         │   0.594937 │ 0.5      │    0.540541 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ II        │   0.594937 │ 0.65     │    0.47561  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.594937 │ 0.306452 │    0.38     │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.594937 │ 0.504854 │    0.55914  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.594937 │ 0.807692 │    0.789474 │
+╘═══════════╧════════════╧══════════╧═════════════╛
+
+Result for KNN comparing with and without PCA:
+1. With PCA:
+╒════════════════════╤═════════╤═════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │       I │      II │      III │        IV │         V │
+╞════════════════════╪═════════╪═════════╪══════════╪═══════════╪═══════════╡
+│ I                  │ 8       │  5      │ 0.333333 │  0        │  0        │
+├────────────────────┼─────────┼─────────┼──────────┼───────────┼───────────┤
+│ II                 │ 1.66667 │ 16.3333 │ 1.33333  │  0.666667 │  0        │
+├────────────────────┼─────────┼─────────┼──────────┼───────────┼───────────┤
+│ III                │ 0       │  5      │ 7.66667  │  7.66667  │  0.333333 │
+├────────────────────┼─────────┼─────────┼──────────┼───────────┼───────────┤
+│ IV                 │ 0       │  0      │ 6.66667  │ 21.6667   │  6        │
+├────────────────────┼─────────┼─────────┼──────────┼───────────┼───────────┤
+│ V                  │ 0       │  0      │ 0.333333 │  9.66667  │ 33.3333   │
+╘════════════════════╧═════════╧═════════╧══════════╧═══════════╧═══════════╛
+╒═══════════╤════════════╤══════════╤═════════════╕
+│ Metrics   │   Accuracy │   Recall │   Precision │
+╞═══════════╪════════════╪══════════╪═════════════╡
+│ I         │   0.660759 │ 0.6      │    0.827586 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ II        │   0.660759 │ 0.816667 │    0.620253 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.660759 │ 0.370968 │    0.469388 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.660759 │ 0.631068 │    0.546218 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.660759 │ 0.769231 │    0.840336 │
+╘═══════════╧════════════╧══════════╧═════════════╛
+2. Without PCA:
+╒════════════════════╤═════╤══════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │   I │       II │      III │        IV │         V │
+╞════════════════════╪═════╪══════════╪══════════╪═══════════╪═══════════╡
+│ I                  │   7 │  5.66667 │ 0.666667 │  0        │  0        │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ II                 │   2 │ 16       │ 1.33333  │  0.666667 │  0        │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ III                │   0 │  6       │ 6.66667  │  7.66667  │  0.333333 │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ IV                 │   0 │  1       │ 6        │ 19.6667   │  7.66667  │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ V                  │   0 │  0       │ 0        │  9.66667  │ 33.6667   │
+╘════════════════════╧═════╧══════════╧══════════╧═══════════╧═══════════╛
+╒═══════════╤════════════╤══════════╤═════════════╕
+│ Metrics   │   Accuracy │   Recall │   Precision │
+╞═══════════╪════════════╪══════════╪═════════════╡
+│ I         │    0.63038 │ 0.525    │    0.777778 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ II        │    0.63038 │ 0.8      │    0.55814  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │    0.63038 │ 0.322581 │    0.454545 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │    0.63038 │ 0.572816 │    0.522124 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │    0.63038 │ 0.776923 │    0.808    │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 
@@ -15138,13 +15157,13 @@ Final results (5-Level):
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
 │ DT without PCA  │   0.640506 │           0.633101 │              0.633943 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with PCA     │   0.605063 │           0.573794 │              0.566131 │
+│ RF with PCA     │   0.655696 │           0.621247 │              0.630376 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF without PCA  │   0.579747 │           0.505978 │              0.512414 │
+│ RF without PCA  │   0.594937 │           0.5538   │              0.548953 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN with PCA    │   0.64557  │           0.614898 │              0.671181 │
+│ KNN with PCA    │   0.660759 │           0.637587 │              0.660756 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN without PCA │   0.653165 │           0.619373 │              0.673857 │
+│ KNN without PCA │   0.63038  │           0.599464 │              0.624117 │
 ╘═════════════════╧════════════╧════════════════════╧═══════════════════════╛
 </pre>
 </div>
@@ -15181,7 +15200,7 @@ Final results (5-Level):
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="s2"> 5-Level Classification </span><span class="si">{</span><span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="c1"># for random forest</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for Random Forest comparing diffent tree number:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_K</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_K</span><span class="p">(</span><span class="n">RFclfs</span><span class="p">,</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">K</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">RFclfs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">rst</span><span class="p">):</span>
     <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;RF with </span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s1"> trees&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">()</span>
@@ -15214,48 +15233,48 @@ For K = 4:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   36.6667 │    6.66667 │
+│ G3 &lt; 10            │        37 │    6.33333 │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   12      │   76.3333  │
+│ G3 &gt;= 10           │        13 │   75.3333  │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.858228 │ 0.846154 │    0.753425 │
+│ G3 &lt; 10   │   0.853165 │ 0.853846 │    0.74     │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.858228 │ 0.864151 │    0.919679 │
+│ G3 &gt;= 10  │   0.853165 │ 0.85283  │    0.922449 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 8:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   36.6667 │    6.66667 │
+│ G3 &lt; 10            │  39.3333  │     4      │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │    7      │   81.3333  │
+│ G3 &gt;= 10           │   7.66667 │    80.6667 │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.896203 │ 0.846154 │    0.839695 │
+│ G3 &lt; 10   │   0.911392 │ 0.907692 │    0.836879 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.896203 │ 0.920755 │    0.924242 │
+│ G3 &gt;= 10  │   0.911392 │ 0.913208 │    0.952756 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 16:
 ╒════════════════════╤═══════════╤════════════╕
 │ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
 ╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.6667  │    8.66667 │
+│ G3 &lt; 10            │        38 │    5.33333 │
 ├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   6.33333 │   82       │
+│ G3 &gt;= 10           │         6 │   82.3333  │
 ╘════════════════════╧═══════════╧════════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.886076 │ 0.8      │    0.845528 │
+│ G3 &lt; 10   │   0.913924 │ 0.876923 │    0.863636 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.886076 │ 0.928302 │    0.904412 │
+│ G3 &gt;= 10  │   0.913924 │ 0.932075 │    0.939163 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 
@@ -15263,62 +15282,98 @@ Final results (Binary):
 ╒══════════════════╤════════════╤════════════════════╤═══════════════════════╕
 │ Model setting    │   Accuracy │   Recall (average) │   Precision (average) │
 ╞══════════════════╪════════════╪════════════════════╪═══════════════════════╡
-│ RF with 4 trees  │   0.858228 │           0.855152 │              0.836552 │
+│ RF with 4 trees  │   0.853165 │           0.853338 │              0.831224 │
 ├──────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with 8 trees  │   0.896203 │           0.883454 │              0.881969 │
+│ RF with 8 trees  │   0.911392 │           0.91045  │              0.894818 │
 ├──────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with 16 trees │   0.886076 │           0.864151 │              0.87497  │
+│ RF with 16 trees │   0.913924 │           0.904499 │              0.9014   │
 ╘══════════════════╧════════════╧════════════════════╧═══════════════════════╛
 
 ######################################## 5-Level Classification ########################################
 
 Result for Random Forest comparing diffent tree number:
 For K = 4:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   36.6667 │    6.66667 │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   12      │   76.3333  │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤═════════╤══════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │       I │       II │      III │        IV │         V │
+╞════════════════════╪═════════╪══════════╪══════════╪═══════════╪═══════════╡
+│ I                  │ 6.33333 │  5.66667 │ 1        │  0.333333 │  0        │
+├────────────────────┼─────────┼──────────┼──────────┼───────────┼───────────┤
+│ II                 │ 6.33333 │ 10.3333  │ 3        │  0        │  0.333333 │
+├────────────────────┼─────────┼──────────┼──────────┼───────────┼───────────┤
+│ III                │ 1.33333 │  8       │ 3.66667  │  5.66667  │  2        │
+├────────────────────┼─────────┼──────────┼──────────┼───────────┼───────────┤
+│ IV                 │ 2       │  2.33333 │ 6.66667  │ 15        │  8.33333  │
+├────────────────────┼─────────┼──────────┼──────────┼───────────┼───────────┤
+│ V                  │ 0       │  1       │ 0.666667 │ 12.6667   │ 29        │
+╘════════════════════╧═════════╧══════════╧══════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.858228 │ 0.846154 │    0.753425 │
+│ I         │   0.488608 │ 0.475    │    0.395833 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.858228 │ 0.864151 │    0.919679 │
+│ II        │   0.488608 │ 0.516667 │    0.378049 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.488608 │ 0.177419 │    0.244444 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.488608 │ 0.436893 │    0.445545 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.488608 │ 0.669231 │    0.731092 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 8:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   36.6667 │    6.66667 │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │    7      │   81.3333  │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤══════════╤═══════════╤═════════╤═══════════╤══════════╕
+│ Confusion matrix   │        I │        II │     III │        IV │        V │
+╞════════════════════╪══════════╪═══════════╪═════════╪═══════════╪══════════╡
+│ I                  │ 6.66667  │  6.66667  │ 0       │  0        │  0       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ II                 │ 4        │ 13        │ 2.33333 │  0.666667 │  0       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ III                │ 1.33333  │  7        │ 6.33333 │  5        │  1       │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ IV                 │ 0.333333 │  0.333333 │ 8       │ 17.3333   │  8.33333 │
+├────────────────────┼──────────┼───────────┼─────────┼───────────┼──────────┤
+│ V                  │ 0        │  0.333333 │ 0       │  8        │ 35       │
+╘════════════════════╧══════════╧═══════════╧═════════╧═══════════╧══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.896203 │ 0.846154 │    0.839695 │
+│ I         │   0.594937 │ 0.5      │    0.540541 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.896203 │ 0.920755 │    0.924242 │
+│ II        │   0.594937 │ 0.65     │    0.47561  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.594937 │ 0.306452 │    0.38     │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.594937 │ 0.504854 │    0.55914  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.594937 │ 0.807692 │    0.789474 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 16:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.6667  │    8.66667 │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   6.33333 │   82       │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤══════════╤══════════╤═════════╤═══════════╤═══════════╕
+│ Confusion matrix   │        I │       II │     III │        IV │         V │
+╞════════════════════╪══════════╪══════════╪═════════╪═══════════╪═══════════╡
+│ I                  │ 6.66667  │  6.66667 │ 0       │  0        │  0        │
+├────────────────────┼──────────┼──────────┼─────────┼───────────┼───────────┤
+│ II                 │ 3.33333  │ 12.6667  │ 3.66667 │  0.333333 │  0        │
+├────────────────────┼──────────┼──────────┼─────────┼───────────┼───────────┤
+│ III                │ 0.333333 │  4.33333 │ 7.66667 │  7.66667  │  0.666667 │
+├────────────────────┼──────────┼──────────┼─────────┼───────────┼───────────┤
+│ IV                 │ 0        │  1       │ 4.66667 │ 20.3333   │  8.33333  │
+├────────────────────┼──────────┼──────────┼─────────┼───────────┼───────────┤
+│ V                  │ 0        │  0       │ 0       │  7        │ 36.3333   │
+╘════════════════════╧══════════╧══════════╧═════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.886076 │ 0.8      │    0.845528 │
+│ I         │   0.635443 │ 0.5      │    0.645161 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.886076 │ 0.928302 │    0.904412 │
+│ II        │   0.635443 │ 0.633333 │    0.513514 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.635443 │ 0.370968 │    0.479167 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.635443 │ 0.592233 │    0.575472 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.635443 │ 0.838462 │    0.801471 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 
@@ -15326,11 +15381,11 @@ Final results (5-Level):
 ╒══════════════════╤════════════╤════════════════════╤═══════════════════════╕
 │ Model setting    │   Accuracy │   Recall (average) │   Precision (average) │
 ╞══════════════════╪════════════╪════════════════════╪═══════════════════════╡
-│ RF with 4 trees  │   0.858228 │           0.855152 │              0.836552 │
+│ RF with 4 trees  │   0.488608 │           0.455042 │              0.438993 │
 ├──────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with 8 trees  │   0.896203 │           0.883454 │              0.881969 │
+│ RF with 8 trees  │   0.594937 │           0.5538   │              0.548953 │
 ├──────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ RF with 16 trees │   0.886076 │           0.864151 │              0.87497  │
+│ RF with 16 trees │   0.635443 │           0.586999 │              0.602957 │
 ╘══════════════════╧════════════╧════════════════════╧═══════════════════════╛
 </pre>
 </div>
@@ -15367,7 +15422,7 @@ Final results (5-Level):
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="s2"> 5-Level Classification </span><span class="si">{</span><span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="c1"># for KNN</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result for KNN comparing diffent K:&quot;</span><span class="p">)</span>
-<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_K</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">rst</span> <span class="o">=</span> <span class="n">compare_K</span><span class="p">(</span><span class="n">KNNclfs</span><span class="p">,</span> <span class="s1">&#39;5-class&#39;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">K</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">KNNclfs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">rst</span><span class="p">):</span>
     <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;KNN with K = </span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">()</span>
@@ -15460,51 +15515,87 @@ Final results (Binary):
 
 Result for KNN comparing diffent K:
 For K = 8:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │   35.3333 │     8      │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   10      │    78.3333 │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤═════╤══════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │   I │       II │      III │        IV │         V │
+╞════════════════════╪═════╪══════════╪══════════╪═══════════╪═══════════╡
+│ I                  │   7 │  5.66667 │ 0.666667 │  0        │  0        │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ II                 │   2 │ 16       │ 1.33333  │  0.666667 │  0        │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ III                │   0 │  6       │ 6.66667  │  7.66667  │  0.333333 │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ IV                 │   0 │  1       │ 6        │ 19.6667   │  7.66667  │
+├────────────────────┼─────┼──────────┼──────────┼───────────┼───────────┤
+│ V                  │   0 │  0       │ 0        │  9.66667  │ 33.6667   │
+╘════════════════════╧═════╧══════════╧══════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.863291 │ 0.815385 │    0.779412 │
+│ I         │    0.63038 │ 0.525    │    0.777778 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.863291 │ 0.886792 │    0.907336 │
+│ II        │    0.63038 │ 0.8      │    0.55814  │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │    0.63038 │ 0.322581 │    0.454545 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │    0.63038 │ 0.572816 │    0.522124 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │    0.63038 │ 0.776923 │    0.808    │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 16:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  34.6667  │    8.66667 │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   6.66667 │   81.6667  │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤══════════╤═══════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │        I │        II │      III │        IV │         V │
+╞════════════════════╪══════════╪═══════════╪══════════╪═══════════╪═══════════╡
+│ I                  │ 6.66667  │  6        │ 0.666667 │  0        │  0        │
+├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
+│ II                 │ 0.666667 │ 17.3333   │ 1.66667  │  0.333333 │  0        │
+├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
+│ III                │ 0        │  5.33333  │ 6.33333  │  8.66667  │  0.333333 │
+├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
+│ IV                 │ 0        │  0.333333 │ 3.66667  │ 23        │  7.33333  │
+├────────────────────┼──────────┼───────────┼──────────┼───────────┼───────────┤
+│ V                  │ 0        │  0        │ 0        │ 10.6667   │ 32.6667   │
+╘════════════════════╧══════════╧═══════════╧══════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.883544 │ 0.8      │    0.83871  │
+│ I         │   0.653165 │ 0.5      │    0.909091 │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.883544 │ 0.924528 │    0.904059 │
+│ II        │   0.653165 │ 0.866667 │    0.597701 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.653165 │ 0.306452 │    0.513514 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.653165 │ 0.669903 │    0.539062 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.653165 │ 0.753846 │    0.809917 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 For K = 32:
-╒════════════════════╤═══════════╤════════════╕
-│ Confusion matrix   │   G3 &lt; 10 │   G3 &gt;= 10 │
-╞════════════════════╪═══════════╪════════════╡
-│ G3 &lt; 10            │  31.3333  │    12      │
-├────────────────────┼───────────┼────────────┤
-│ G3 &gt;= 10           │   4.66667 │    83.6667 │
-╘════════════════════╧═══════════╧════════════╛
+╒════════════════════╤═════╤═══════════╤══════════╤═══════════╤═══════════╕
+│ Confusion matrix   │   I │        II │      III │        IV │         V │
+╞════════════════════╪═════╪═══════════╪══════════╪═══════════╪═══════════╡
+│ I                  │   4 │  8.66667  │ 0.333333 │  0.333333 │  0        │
+├────────────────────┼─────┼───────────┼──────────┼───────────┼───────────┤
+│ II                 │   0 │ 17.6667   │ 1        │  1.33333  │  0        │
+├────────────────────┼─────┼───────────┼──────────┼───────────┼───────────┤
+│ III                │   0 │  5.33333  │ 5.66667  │  9        │  0.666667 │
+├────────────────────┼─────┼───────────┼──────────┼───────────┼───────────┤
+│ IV                 │   0 │  0.333333 │ 2.33333  │ 24        │  7.66667  │
+├────────────────────┼─────┼───────────┼──────────┼───────────┼───────────┤
+│ V                  │   0 │  0        │ 0        │  8.66667  │ 34.6667   │
+╘════════════════════╧═════╧═══════════╧══════════╧═══════════╧═══════════╛
 ╒═══════════╤════════════╤══════════╤═════════════╕
 │ Metrics   │   Accuracy │   Recall │   Precision │
 ╞═══════════╪════════════╪══════════╪═════════════╡
-│ G3 &lt; 10   │   0.873418 │ 0.723077 │    0.87037  │
+│ I         │   0.653165 │ 0.3      │    1        │
 ├───────────┼────────────┼──────────┼─────────────┤
-│ G3 &gt;= 10  │   0.873418 │ 0.94717  │    0.874564 │
+│ II        │   0.653165 │ 0.883333 │    0.552083 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ III       │   0.653165 │ 0.274194 │    0.607143 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ IV        │   0.653165 │ 0.699029 │    0.553846 │
+├───────────┼────────────┼──────────┼─────────────┤
+│ V         │   0.653165 │ 0.8      │    0.806202 │
 ╘═══════════╧════════════╧══════════╧═════════════╛
 
 
@@ -15512,11 +15603,11 @@ Final results (5-Level):
 ╒═════════════════╤════════════╤════════════════════╤═══════════════════════╕
 │ Model setting   │   Accuracy │   Recall (average) │   Precision (average) │
 ╞═════════════════╪════════════╪════════════════════╪═══════════════════════╡
-│ KNN with K = 8  │   0.863291 │           0.851089 │              0.843374 │
+│ KNN with K = 8  │   0.63038  │           0.599464 │              0.624117 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN with K = 16 │   0.883544 │           0.862264 │              0.871384 │
+│ KNN with K = 16 │   0.653165 │           0.619373 │              0.673857 │
 ├─────────────────┼────────────┼────────────────────┼───────────────────────┤
-│ KNN with K = 32 │   0.873418 │           0.835123 │              0.872467 │
+│ KNN with K = 32 │   0.653165 │           0.591311 │              0.703855 │
 ╘═════════════════╧════════════╧════════════════════╧═══════════════════════╛
 </pre>
 </div>
@@ -15530,8 +15621,8 @@ Final results (5-Level):
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Comparison-&amp;-Conclution">Comparison &amp; Conclution<a class="anchor-link" href="#Comparison-&amp;-Conclution">&#182;</a></h1><p>(DT代表decision tree, RF代表random forest, KNN代表KNN)</p>
-<h2 id="%E6%9C%89%E7%84%A1-PCA-%E7%9A%84%E6%AF%94%E8%BC%83">&#26377;&#28961; PCA &#30340;&#27604;&#36611;<a class="anchor-link" href="#%E6%9C%89%E7%84%A1-PCA-%E7%9A%84%E6%AF%94%E8%BC%83">&#182;</a></h2><p>可以看到，在5-level classification中，RF使用了經過PCA降維後的資料，其準確度會稍有提升，我想這是因為PCA將資料降維後，RF的可訓練參數（node）數量會大幅度的下降，因此避免了overfitting的困擾；而DT和KNN則是會稍有下降，或許是因為DT在經過PCA降維後，因為隨機，導致建出來的樹形狀比較奇怪，而KNN要視資料分佈的domain來決定，但是因為下降幅度都非常小，但是可以大幅的減少計算量並加速計算，因此使用PCA還是很有好處的。</p>
-<h2 id="RF-%E4%B8%AD%E4%B8%8D%E5%90%8C-tree-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">RF &#20013;&#19981;&#21516; tree &#25976;&#30446;&#30340;&#27604;&#36611;<a class="anchor-link" href="#RF-%E4%B8%AD%E4%B8%8D%E5%90%8C-tree-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">&#182;</a></h2><p>在4、8、16三種設定下，使用8棵樹可以達到最好的效能，我認為這也同樣受到了訓練資料量，和可訓練參數量之間平衡的影響。</p>
+<h2 id="%E6%9C%89%E7%84%A1-PCA-%E7%9A%84%E6%AF%94%E8%BC%83">&#26377;&#28961; PCA &#30340;&#27604;&#36611;<a class="anchor-link" href="#%E6%9C%89%E7%84%A1-PCA-%E7%9A%84%E6%AF%94%E8%BC%83">&#182;</a></h2><p>可以看到，在5-level classification中，RF和KNN使用了經過PCA降維後的資料，其準確度會稍有提升，我想這是因為PCA將資料降維後，RF的可訓練參數（node）數量會大幅度的下降，因此避免了overfitting的困擾；而DT則是會稍有下降，或許是因為DT在經過PCA降維後，因為隨機，導致建出來的樹形狀比較奇怪，而KNN要視資料分佈的domain來決定，但是因為下降幅度都非常小，但是可以大幅的減少計算量並加速計算，因此使用PCA還是很有好處的。</p>
+<h2 id="RF-%E4%B8%AD%E4%B8%8D%E5%90%8C-tree-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">RF &#20013;&#19981;&#21516; tree &#25976;&#30446;&#30340;&#27604;&#36611;<a class="anchor-link" href="#RF-%E4%B8%AD%E4%B8%8D%E5%90%8C-tree-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">&#182;</a></h2><p>在4、8、16三種設定下，使用16棵樹可以達到最好的效能，我認為這也同樣受到了訓練資料量，和可訓練參數量之間平衡的影響。</p>
 <h2 id="KNN-%E4%B8%AD%E4%B8%8D%E5%90%8C-K-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">KNN &#20013;&#19981;&#21516; K &#25976;&#30446;&#30340;&#27604;&#36611;<a class="anchor-link" href="#KNN-%E4%B8%AD%E4%B8%8D%E5%90%8C-K-%E6%95%B8%E7%9B%AE%E7%9A%84%E6%AF%94%E8%BC%83">&#182;</a></h2><p>我認為這個單純是 KNN 對於不同的資料分佈會有不同的K合適，因此做實驗時，多次實驗來決定參數是很重要的！</p>
 <h2 id="Feedbacks">Feedbacks<a class="anchor-link" href="#Feedbacks">&#182;</a></h2><p>可不可以減少一點畫表格的數量QQ，每次畫表格的時間比實際建模型訓練的時間還要久，而且感覺要做的實驗有點多，像是這次的作業，如果會做5-level classification，應該做binary classification就完全沒有問題吧，我覺得或許可以改成bonus的形式，就是可以選擇做其中一種，然後比較困難的可以小加分，這樣可以照顧到程度比較不好的同學，然後都寫的出來的負擔也不會這麼重</p>
 
