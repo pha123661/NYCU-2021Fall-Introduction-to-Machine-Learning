@@ -78,6 +78,7 @@ class CNN_Model(pl.LightningModule):
         features = features.reshape((features.shape[0], -1))
         ret = self.classifier(features)
         loss = self.loss_function(ret, y)
+        self.log(loss.mean().item())
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -92,9 +93,6 @@ class CNN_Model(pl.LightningModule):
         self.log("acc", acc)
     
     def configure_optimizers(self):
-        return torch.optim.SGD(
+        return torch.optim.Adam(
             self.parameters(),
-            lr=HyperParams.learning_rate,
-            momentum=HyperParams.momentum,
-            weight_decay=HyperParams.weight_decay,
-            nesterov=True)
+            lr=HyperParams.learning_rate,)
