@@ -10,7 +10,7 @@ def main():
     checkpoint_callback = ModelCheckpoint(
         monitor='acc',
         dirpath='./model_weights',
-        filename='CNN-{epoch:02d}-{acc:.2f}',
+        filename='CNN_{epoch:02d}_{acc:.2f}',
         save_top_k=2,
         mode='max',
     )
