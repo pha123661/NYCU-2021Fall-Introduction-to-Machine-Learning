@@ -41,7 +41,7 @@ def main():
             data_chuncks = np.split(feature, num_chunks)
             for idx, i in enumerate(data_chuncks):
                 save_path = os.path.join(HyperParams.feature_path, file_name.split('\\')[1])
-                save_name = file_name.split('\\')[1]+file_name.split(".")[2]+"."+str(idx)+".npy"
+                save_name = file_name.split('\\')[1]+"."+file_name.split(".")[2]+"."+str(idx)+".npy"
                 if not os.path.exists(save_path):
                     os.makedirs(save_path)
 

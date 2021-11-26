@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
+from sklearn.model_selection import train_test_split
 from Hyper_parameters import HyperParams
 
 
@@ -29,10 +30,9 @@ def get_label(filename):
     return label
 
 
-def load_dataset(name):
+def load_dataset():
     x, y = [], []
-    path = os.path.join(HyperParams.feature_path, name)
-    for root, _, files in os.walk(path):
+    for root, _, files in os.walk(HyperParams.feature_path):
         for file in files:
             data = np.load(os.path.join(root, file))
             label = get_label(file)
@@ -41,27 +41,24 @@ def load_dataset(name):
     return np.stack(x), np.stack(y)
 
 
-def myDataLoader():
-    x_train, y_train = load_dataset("train")
-    x_valid, y_valid = load_dataset("valid")
-    x_test, y_test = load_dataset("test")
-
-    # normalize
-    mean = np.mean(x_train)
-    std = np.std(x_train)
-    x_train = (x_train-mean)/std
-    x_valid = (x_valid-mean)/std
-    x_test = (x_test-mean)/std
+def myDataLoader(normalize=True):
+    print("Loading dataset...")
+    x, y = load_dataset()
+    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=0)
+    if normalize:
+        # normalize
+        x_train = (x_train-x_train.mean())/x_train.std()
+        x_test = (x_test-x_train.mean())/x_train.std()
 
     train = GTZANDataset(x_train, y_train)
-    valid = GTZANDataset(x_valid, y_valid)
     test = GTZANDataset(x_test, y_test)
 
     train_loader = DataLoader(
         train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False)
-    valid_loader = DataLoader(
-        valid, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
     test_loader = DataLoader(
         test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
+    return train_loader, test_loader
 
-    return train_loader, valid_loader, test_loader
+if __name__ == '__main__':
+    train, test = myDataLoader()
+    print(len(train), len(test))
