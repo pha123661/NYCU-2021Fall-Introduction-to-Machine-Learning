@@ -44,6 +44,7 @@ def load_dataset():
 def get_loaders(normalize=True):
     print("Loading dataset...")
     x, y = load_dataset()
+    x, y = x.astype(np.float32), y.astype(np.longlong)
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=0)
     if normalize:
         # normalize
@@ -54,11 +55,7 @@ def get_loaders(normalize=True):
     test = GTZANDataset(x_test, y_test)
 
     train_loader = DataLoader(
-        train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False)
+        train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False, num_workers=1)
     test_loader = DataLoader(
-        test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
+        test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False, num_workers=1)
     return train_loader, test_loader
-
-if __name__ == '__main__':
-    train, test = get_loaders()
-    print(len(train), len(test))
