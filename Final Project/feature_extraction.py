@@ -10,7 +10,7 @@ def load_list(list_name, HyperParams):
         return file_names
 
 def melspectrogram(file_name, HyperParams):
-    y, sr = librosa.load(os.path.join(HyperParams.dataset_path, file_name), HyperParams.sample_rate)
+    y, sr = librosa.load(file_name, HyperParams.sample_rate)
     S = librosa.stft(y, n_fft=HyperParams.fft_size, hop_length=HyperParams.hop_size, win_length=HyperParams.win_size)
 
     mel_basis = librosa.filters.mel(HyperParams.sample_rate, n_fft=HyperParams.fft_size, n_mels=HyperParams.num_mels)
@@ -30,28 +30,24 @@ def resize_array(array, length):
 
 def main():
     print("Extracting Feature")
-    list_names = ['train_list.txt', 'valid_list.txt', 'test_list.txt']
 
-    for list_name in list_names:
-        set_name = list_name.replace('_list.txt', '')
-        file_names = load_list(list_name, HyperParams)
-
-        for file_name in file_names:
+    for root, _, filenames in os.walk(HyperParams.dataset_path):
+        for file_name in filenames:
+            file_name = os.path.join(root, file_name)
             feature = melspectrogram(file_name, HyperParams)
             feature = resize_array(feature, HyperParams.feature_length)
-
             # Data Arguments
             num_chunks = feature.shape[0]/HyperParams.num_mels
             data_chuncks = np.split(feature, num_chunks)
-
             for idx, i in enumerate(data_chuncks):
-                save_path = os.path.join(HyperParams.feature_path, set_name, file_name.split('/')[0])
-                save_name = file_name.split('/')[1].split('.wav')[0]+str(idx)+".npy"
+                save_path = os.path.join(HyperParams.feature_path, file_name.split('\\')[1])
+                save_name = file_name.split('\\')[1]+file_name.split(".")[2]+"."+str(idx)+".npy"
                 if not os.path.exists(save_path):
                     os.makedirs(save_path)
 
                 np.save(os.path.join(save_path, save_name), i.astype(np.float32))
                 print(os.path.join(save_path, save_name))
+
 
     print('finished')
 

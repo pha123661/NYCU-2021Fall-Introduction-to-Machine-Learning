@@ -3,8 +3,8 @@ class Hyper_parameters():
     def __init__(self):
         self.dataset_path = "./dataset/gtzan"
         self.feature_path = "./dataset/feature_augment"
-        self.genres = ['classical', 'country', 'disco',
-                       'hiphop', 'jazz', 'metal', 'pop', 'reggae']
+        self.genres = ['blues', 'classical', 'country', 'disco',
+                       'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
 
         # Feature Parameters
         self.sample_rate = 22050
