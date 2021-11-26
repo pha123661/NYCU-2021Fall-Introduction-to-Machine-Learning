@@ -78,7 +78,7 @@ class CNN_Model(pl.LightningModule):
         features = features.reshape((features.shape[0], -1))
         ret = self.classifier(features)
         loss = self.loss_function(ret, y)
-        self.log(loss.mean().item())
+        self.log('training_loss', loss.mean().item())
         return loss
 
     def validation_step(self, batch, batch_idx):
