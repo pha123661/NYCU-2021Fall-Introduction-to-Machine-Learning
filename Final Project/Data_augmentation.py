@@ -4,14 +4,11 @@ import os
 import soundfile as sf
 from Hyper_parameters import HyperParams
 
-def get_genre(HyperParams):
-    return HyperParams.genres
-
-def get_item(HyperParams, genre):
+def get_item(genre):
     return librosa.util.find_files(HyperParams.dataset_path + '/' + str(genre))
 
 
-def readfile(file_name, HyperParams):
+def readfile(file_name):
     y, sr = librosa.load(file_name, HyperParams.sample_rate)
     return y, sr
 
@@ -79,12 +76,12 @@ def change_speed(data):
 
 def main():
     print('Augmentation')
-    genres = get_genre(HyperParams)
+    genres = HyperParams.genres
 
     for genre in genres:
-        item_list = get_item(HyperParams, genre)
+        item_list = get_item(genre)
         for file_name in item_list:
-            y, sr = readfile(file_name, HyperParams)
+            y, sr = readfile(file_name)
             data_noise = add_noise(y)
             data_roll = shift(y)
             data_stretch = stretch(y)
