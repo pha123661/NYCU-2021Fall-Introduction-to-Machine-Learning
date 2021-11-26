@@ -108,7 +108,6 @@ def main():
             with Pool(12) as pool:
                 [data_noise, data_roll, data_stretch, pitch_speed, pitch, speed, value, y_percussive, y_shift] \
                     = pool.map(MP_helper, [(y, x) for x in range(9)])
-            print([x.shape for x in [data_noise, data_roll, data_stretch, pitch_speed, pitch, speed, value, y_percussive, y_shift]])
             save_path = os.path.join(file_name.split(genre + '.')[0])
             save_name =  genre + '.'+file_name.split(genre + '.')[1]
             print(save_name)
@@ -122,7 +121,7 @@ def main():
             sf.write(os.path.join(save_path, save_name.replace('.wav', 'g.wav')), value, HyperParams.sample_rate)
             sf.write(os.path.join(save_path, save_name.replace('.wav', 'h.wav')), y_percussive, HyperParams.sample_rate)
             sf.write(os.path.join(save_path, save_name.replace('.wav', 'i.wav')), y_shift, HyperParams.sample_rate)
-        print('finished')
+        print('finished '+genre)
 
 
 if __name__ == '__main__':
