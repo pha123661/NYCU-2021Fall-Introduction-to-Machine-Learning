@@ -41,7 +41,7 @@ def load_dataset():
     return np.stack(x), np.stack(y)
 
 
-def myDataLoader(normalize=True):
+def get_loaders(normalize=True):
     print("Loading dataset...")
     x, y = load_dataset()
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=0)
@@ -60,5 +60,5 @@ def myDataLoader(normalize=True):
     return train_loader, test_loader
 
 if __name__ == '__main__':
-    train, test = myDataLoader()
+    train, test = get_loaders()
     print(len(train), len(test))

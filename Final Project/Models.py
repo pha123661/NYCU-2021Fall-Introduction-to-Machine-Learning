@@ -122,7 +122,7 @@ class Wrapper(nn.Module):
 
 if __name__ == "__main__":
     Classifier = Wrapper()
-    train_loader, valid_loader, test_loader = myDataLoader.myDataLoader()
+    train_loader, valid_loader, test_loader = myDataLoader.get_loaders()
 
     print("Start Training")
     acc_train_set, acc_valid_set, acc_test_set = [], [], []
