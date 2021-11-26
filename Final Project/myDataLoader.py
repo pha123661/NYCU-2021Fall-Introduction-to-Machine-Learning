@@ -55,7 +55,7 @@ def get_loaders(normalize=True):
     test = GTZANDataset(x_test, y_test)
 
     train_loader = DataLoader(
-        train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False, num_workers=6)
+        train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False, num_workers=3)
     test_loader = DataLoader(
-        test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False, num_workers=6)
+        test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False, num_workers=3)
     return train_loader, test_loader
