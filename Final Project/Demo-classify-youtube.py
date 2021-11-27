@@ -6,7 +6,7 @@ import urllib
 import torch
 from moviepy.editor import AudioFileClip
 from pytube import YouTube
-from main import CNN_Model
+from CNN_Train_Test_Plot import *
 from Hyper_parameters import HyperParams
 
 warnings.filterwarnings("ignore")
