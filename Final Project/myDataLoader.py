@@ -2,6 +2,8 @@ import os
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from Hyper_parameters import HyperParams
+import torch
+from CNN_Train_Test_Plot import *
 
 
 class GTZANDataset(Dataset):
@@ -29,7 +31,7 @@ def get_label(filename):
     return label
 
 
-def load_dataset(name, flatten=False):
+def load_dataset(name):
     x, y = [], []
     path = os.path.join(HyperParams.feature_path, name)
     for root, _, files in os.walk(path):
@@ -39,15 +41,27 @@ def load_dataset(name, flatten=False):
             x.append(data)
             y.append(label)
     x, y = np.stack(x), np.stack(y)
-    if flatten:
-        x = x.reshape(x.shape[0], -1)
     return x, y
 
-def get_ndarrays(test=False, flatten=False):
+def get_CNN_output(x):
+    x = torch.tensor(x).cuda()
+    ex = torch.load("CNN.pth", map_location='cuda').model.extractor
+    x = torch.unsqueeze(x, dim=1)
+    ll = list()
+    with torch.no_grad():
+        for st, en in zip(range(0, x.shape[0], HyperParams.batch_size), range(HyperParams.batch_size,  x.shape[0]+HyperParams.batch_size, HyperParams.batch_size)):
+            tmp = ex(x[st:en]).cpu().numpy()
+            ll.append(tmp)
+    x = np.concatenate(ll, axis=0)
+    x = x.reshape((x.shape[0], -1))
+    return x
+
+
+def get_ndarrays(test=False):
     if not test:
-        x_train, y_train = load_dataset("train", flatten)
-        x_valid, y_valid = load_dataset("valid", flatten)
-        x_test, y_test = load_dataset("test", flatten)
+        x_train, y_train = load_dataset("train")
+        x_valid, y_valid = load_dataset("valid")
+        x_test, y_test = load_dataset("test")
 
         # normalize
         mean = np.mean(x_train)
@@ -56,10 +70,11 @@ def get_ndarrays(test=False, flatten=False):
         x_valid = (x_valid-mean)/std
         x_test = (x_test-mean)/std
 
+        x_train, x_test, x_valid = get_CNN_output(x_train), get_CNN_output(x_test), get_CNN_output(x_valid)
         return x_train, y_train, x_test, y_test, x_valid, y_valid
     else:
-        x_valid, y_valid = load_dataset("valid", flatten)
-        x_test, y_test = load_dataset("test", flatten)
+        x_valid, y_valid = load_dataset("valid")
+        x_test, y_test = load_dataset("test")
 
         # normalize
         mean = np.mean(x_valid)
@@ -67,6 +82,7 @@ def get_ndarrays(test=False, flatten=False):
         x_valid = (x_valid-mean)/std
         x_test = (x_test-mean)/std
 
+        x_test, x_valid = get_CNN_output(x_test), get_CNN_output(x_valid)
         return x_valid, y_valid, x_test, y_test, x_test, y_test
 
 def get_loaders(test=False):
