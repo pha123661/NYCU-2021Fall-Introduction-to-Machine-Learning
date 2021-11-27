@@ -39,20 +39,20 @@ class CNN_Model(pl.LightningModule):
             nn.MaxPool2d(kernel_size=4),
             # 256 8 8
 
-            nn.Conv2d(in_channels=256, out_channels=512,
+            nn.Conv2d(in_channels=256, out_channels=256,
                       kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            # 512 8 8
+            # 256 8 8
             nn.MaxPool2d(kernel_size=4)
-            # 512 2 2
+            # 256 2 2
         )
 
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=2048, out_features=1024),
+            nn.Linear(in_features=1024, out_features=512),
             nn.ReLU(),
             nn.Dropout(),
-            nn.Linear(in_features=1024, out_features=256),
+            nn.Linear(in_features=512, out_features=256),
             nn.ReLU(),
             nn.Dropout(),
             nn.Linear(in_features=256, out_features=len(HyperParams.genres))
@@ -89,10 +89,10 @@ class CNN_Model(pl.LightningModule):
         ret = self.classifier(features)
 
         ret = ret.max(1)[1]
+        assert ret.shape == y.shape, "shape incorrect!"
         acc = (ret == y).float().mean()
         self.log("acc", acc)
     
     def configure_optimizers(self):
-        return torch.optim.Adam(
-            self.parameters(),
-            lr=HyperParams.learning_rate,)
+        optim = torch.optim.Adam(list(self.extractor.parameters())+list(self.classifier.parameters()),lr=HyperParams.learning_rate,)
+        return optim

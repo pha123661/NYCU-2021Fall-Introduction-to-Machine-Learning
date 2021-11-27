@@ -4,12 +4,7 @@ import librosa
 
 from Hyper_parameters import HyperParams
 
-def load_list(list_name, HyperParams):
-    with open(os.path.join(HyperParams.dataset_path, list_name)) as f:
-        file_names = f.read().splitlines()
-        return file_names
-
-def melspectrogram(file_name, HyperParams):
+def melspectrogram(file_name):
     y, sr = librosa.load(file_name, HyperParams.sample_rate)
     S = librosa.stft(y, n_fft=HyperParams.fft_size, hop_length=HyperParams.hop_size, win_length=HyperParams.win_size)
 
@@ -34,7 +29,7 @@ def main():
     for root, _, filenames in os.walk(HyperParams.dataset_path):
         for file_name in filenames:
             file_name = os.path.join(root, file_name)
-            feature = melspectrogram(file_name, HyperParams)
+            feature = melspectrogram(file_name)
             feature = resize_array(feature, HyperParams.feature_length)
             # Data Arguments
             num_chunks = feature.shape[0]/HyperParams.num_mels
@@ -46,7 +41,6 @@ def main():
                     os.makedirs(save_path)
 
                 np.save(os.path.join(save_path, save_name), i.astype(np.float32))
-                print(os.path.join(save_path, save_name))
 
 
     print('finished')

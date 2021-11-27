@@ -2,6 +2,7 @@ import os
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 from Hyper_parameters import HyperParams
 
 
@@ -44,6 +45,7 @@ def load_dataset():
 def get_loaders(normalize=True):
     print("Loading dataset...")
     x, y = load_dataset()
+    x, y = shuffle(x, y, random_state=0)
     x, y = x.astype(np.float32), y.astype(np.longlong)
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=0)
     if normalize:
