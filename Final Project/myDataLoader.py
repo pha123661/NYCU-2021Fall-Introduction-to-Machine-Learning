@@ -56,16 +56,18 @@ def get_ndarrays(test=False, flatten=False):
         x_valid = (x_valid-mean)/std
         x_test = (x_test-mean)/std
 
-        return x_train, y_train, x_test, y_valid, x_valid, y_test
+        return x_train, y_train, x_test, y_test, x_valid, y_valid
     else:
         x_valid, y_valid = load_dataset("valid", flatten)
+        x_test, y_test = load_dataset("test", flatten)
 
         # normalize
         mean = np.mean(x_valid)
         std = np.std(x_valid)
         x_valid = (x_valid-mean)/std
+        x_test = (x_test-mean)/std
 
-        return x_valid, y_valid, x_valid, y_valid, x_valid, y_valid
+        return x_valid, y_valid, x_test, y_test, x_test, y_test
 
 def get_loaders(test=False):
     if not test:
