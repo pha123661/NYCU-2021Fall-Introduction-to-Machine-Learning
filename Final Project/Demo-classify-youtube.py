@@ -43,7 +43,7 @@ def feature_extraction(filename, debug=False):
 
 if __name__ == '__main__':
     print("Available genres:", HyperParams.genres)
-    Model = torch.load("Trained_model_wonorm.pth",
+    Model = torch.load("Demo_CNN_model.pth",
                        map_location=torch.device('cpu')).eval()
     while True:
         link = input("Please enter YouTube link: ")
