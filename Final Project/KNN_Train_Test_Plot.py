@@ -9,7 +9,7 @@ from CNN_Train_Test_Plot import *
 
 def main():
     x_train, y_train, x_test, y_test, x_valid, y_valid = get_ndarrays()
-    shape = (samples, 512*2*2)
+    # shape = (samples, 512*2*2)
     for k in [5, 7, 10, 20, 40, 100]:
         KNNclf = KNeighborsClassifier(n_jobs=-1, n_neighbors=k) # get by grid search
         KNNclf.fit(x_train, y_train)
