@@ -29,7 +29,7 @@ def get_label(filename):
     return label
 
 
-def load_dataset(name):
+def load_dataset(name, flatten=False):
     x, y = [], []
     path = os.path.join(HyperParams.feature_path, name)
     for root, _, files in os.walk(path):
@@ -38,8 +38,34 @@ def load_dataset(name):
             label = get_label(file)
             x.append(data)
             y.append(label)
-    return np.stack(x), np.stack(y)
+    x, y = np.stack(x), np.stack(y)
+    if flatten:
+        x = x.reshape(x.shape[0], -1)
+    return x, y
 
+def get_ndarrays(test=False, flatten=False):
+    if not test:
+        x_train, y_train = load_dataset("train", flatten)
+        x_valid, y_valid = load_dataset("valid", flatten)
+        x_test, y_test = load_dataset("test", flatten)
+
+        # normalize
+        mean = np.mean(x_train)
+        std = np.std(x_train)
+        x_train = (x_train-mean)/std
+        x_valid = (x_valid-mean)/std
+        x_test = (x_test-mean)/std
+
+        return x_train, y_train, x_test, y_valid, x_valid, y_test
+    else:
+        x_valid, y_valid = load_dataset("valid", flatten)
+
+        # normalize
+        mean = np.mean(x_valid)
+        std = np.std(x_valid)
+        x_valid = (x_valid-mean)/std
+
+        return x_valid, y_valid, x_valid, y_valid, x_valid, y_valid
 
 def get_loaders(test=False):
     if not test:
