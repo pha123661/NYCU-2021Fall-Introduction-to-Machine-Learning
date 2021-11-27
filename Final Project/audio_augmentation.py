@@ -86,21 +86,21 @@ def change_speed(data):
 def main():
     print('Augmentation')
     genres = get_genre(HyperParams)
-    list_names = ['train_list.txt']
-    for list_name in list_names:
-        file_names = load_list(list_name, HyperParams)
-        with open(os.path.join(HyperParams.dataset_path, list_name),'w') as f:
-            for i in file_names:
-                f.writelines(i+'\n')
-                f.writelines(i.replace('.wav', 'a.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'b.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'c.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'd.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'e.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'f.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'g.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'h.wav' + '\n'))
-                f.writelines(i.replace('.wav', 'i.wav' + '\n'))
+    # list_names = ['train_list.txt']
+    # for list_name in list_names:
+    #     file_names = load_list(list_name, HyperParams)
+    #     with open(os.path.join(HyperParams.dataset_path, list_name),'w') as f:
+    #         for i in file_names:
+    #             f.writelines(i+'\n')
+    #             f.writelines(i.replace('.wav', 'a.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'b.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'c.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'd.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'e.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'f.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'g.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'h.wav' + '\n'))
+    #             f.writelines(i.replace('.wav', 'i.wav' + '\n'))
 
     for genre in genres:
         item_list = get_item(HyperParams, genre)
