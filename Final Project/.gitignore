@@ -4,4 +4,3 @@ __pycache__
 *.zip
 *.mp4
 tmp.py
-lightning_logs
