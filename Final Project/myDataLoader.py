@@ -41,27 +41,42 @@ def load_dataset(name):
     return np.stack(x), np.stack(y)
 
 
-def myDataLoader():
-    x_train, y_train = load_dataset("train")
-    x_valid, y_valid = load_dataset("valid")
-    x_test, y_test = load_dataset("test")
+def get_loaders(test=False):
+    if not test:
+        x_train, y_train = load_dataset("train")
+        x_valid, y_valid = load_dataset("valid")
+        x_test, y_test = load_dataset("test")
 
-    # normalize
-    mean = np.mean(x_train)
-    std = np.std(x_train)
-    x_train = (x_train-mean)/std
-    x_valid = (x_valid-mean)/std
-    x_test = (x_test-mean)/std
+        # normalize
+        mean = np.mean(x_train)
+        std = np.std(x_train)
+        x_train = (x_train-mean)/std
+        x_valid = (x_valid-mean)/std
+        x_test = (x_test-mean)/std
 
-    train = GTZANDataset(x_train, y_train)
-    valid = GTZANDataset(x_valid, y_valid)
-    test = GTZANDataset(x_test, y_test)
+        train = GTZANDataset(x_train, y_train)
+        valid = GTZANDataset(x_valid, y_valid)
+        test = GTZANDataset(x_test, y_test)
 
-    train_loader = DataLoader(
-        train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False)
-    valid_loader = DataLoader(
-        valid, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
-    test_loader = DataLoader(
-        test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
+        train_loader = DataLoader(
+            train, batch_size=HyperParams.batch_size, shuffle=True, drop_last=False)
+        valid_loader = DataLoader(
+            valid, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
+        test_loader = DataLoader(
+            test, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
 
-    return train_loader, valid_loader, test_loader
+        return train_loader, valid_loader, test_loader
+    else:
+        x_valid, y_valid = load_dataset("valid")
+
+        # normalize
+        mean = np.mean(x_valid)
+        std = np.std(x_valid)
+        x_valid = (x_valid-mean)/std
+
+        valid = GTZANDataset(x_valid, y_valid)
+
+        valid_loader = DataLoader(
+            valid, batch_size=HyperParams.batch_size, shuffle=False, drop_last=False)
+
+        return valid_loader, valid_loader, valid_loader
