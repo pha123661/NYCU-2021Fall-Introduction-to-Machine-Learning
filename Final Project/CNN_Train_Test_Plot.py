@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import pickle
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
 
 torch.manual_seed(0)
 torch.backends.cudnn.deterministic = True
@@ -94,6 +95,11 @@ class Wrapper(nn.Module):
 
         return correct_count/float(ground_truth.shape[0])*100
 
+    def predict(self, x):
+        x = torch.tensor(x)
+        rst = self.model(x)
+        return rst.max(1)[1].cpu().numpy()
+
     def run(self, dataloader, mode="train"):
         if mode == "train":
             self.model.train()
@@ -124,6 +130,19 @@ if __name__ == "__main__":
     Classifier = Wrapper()
     train_loader, valid_loader, test_loader = myDataLoader.get_loaders()
 
+    cat_pred = np.array([])
+    cat_gt = np.array([])
+    for x, y in test_loader:
+        x = x.to(Classifier.device)
+        y = y.cpu().numpy()
+        y_pred = Classifier.predict(x)
+        cat_pred = np.concatenate([cat_pred, y_pred], axis=0)
+        cat_gt = np.concatenate([cat_gt, y], axis=0)
+    y_test = cat_gt
+    y_pred = cat_pred
+    print(confusion_matrix(y_test, y_pred))
+    print(accuracy_score(y_test, y_pred), recall_score(y_test, y_pred, average='macro'), precision_score(y_test, y_pred, average='macro'))
+
     print("Start Training")
     acc_train_set, acc_valid_set, acc_test_set = [], [], []
     for epoch in range(1, HyperParams.num_epochs+1):
@@ -137,6 +156,20 @@ if __name__ == "__main__":
 
         print("Epoch %d: train acc: %.2f, valid acc: %.2f, test acc: %.2f" %
               (epoch, acc_train, acc_valid, acc_test))
+    torch.save(Classifier, "CNN.pth")
+
+    cat_pred = np.array([])
+    cat_gt = np.array([])
+    for x, y in test_loader:
+        x = x.to(Classifier.device)
+        y = y.cpu().numpy()
+        y_pred = Classifier.predict(x)
+        cat_pred = np.concatenate([cat_pred, y_pred], axis=0)
+        cat_gt = np.concatenate([cat_gt, y], axis=0)
+    y_test = cat_gt
+    y_pred = cat_pred
+    print(confusion_matrix(y_test, y_pred))
+    print(accuracy_score(y_test, y_pred), recall_score(y_test, y_pred, average='macro'), precision_score(y_test, y_pred, average='macro'))
 
     print("Training finished!")
     print("Test Accuracy: %.2f" % (acc_test))

@@ -16,7 +16,7 @@ class Hyper_parameters():
 
         # Training Parameters
         self.batch_size = 64
-        self.num_epochs = 26
+        self.num_epochs = 9
         self.learning_rate = 1e-2
         self.weight_decay = 1e-6
         self.momentum = 0.9
